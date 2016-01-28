@@ -40,7 +40,9 @@
 //////////////////////////////////////////////////////////////////////////////
                                         
 module pet2001_top(
-                   output [1:0] vidout,
+                   output       petvid_data_n,
+                   output       petvid_horz_n,
+                   output       petvid_vert_n,
 
                    output [3:0] keyrow,
                    input [7:0]  keyin,
@@ -94,7 +96,9 @@ module pet2001_top(
                  .nmi(nmi),
                  .irq(irq),
 
-                 .vidout(vidout),
+                 .petvid_data_n(petvid_data_n),
+                 .petvid_horz_n(petvid_horz_n),
+                 .petvid_vert_n(petvid_vert_n),
 
                  .keyin(keyin),
                  .keyrow(keyrow),

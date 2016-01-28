@@ -47,7 +47,9 @@ module pet2001hw(
                  output           nmi,
                  output           irq,
 
-                 output [1:0]     vidout,  // Composite video
+                 output           petvid_data_n, // PET video interface
+                 output           petvid_horz_n,
+                 output           petvid_vert_n,
 
                  output [3:0]     keyrow, // Keyboard
                  input [7:0]      keyin,
@@ -78,13 +80,7 @@ module pet2001hw(
     reg [6:0]   clkdiv;
     reg         slow_clock;
     
-`ifdef CLK100MHZ
- `define CLKDIV_VAL 7'd99
-`elsif CLK25MHZ
- `define CLKDIV_VAL 7'd24
-`else
- `define CLKDIV_VAL 7'd49
-`endif
+`define CLKDIV_VAL 7'd39	// 40 Mhz input clock
     
     always @(posedge clk)
         if (reset || clkdiv == 7'd0)
@@ -169,22 +165,26 @@ module pet2001hw(
                                 // rows.  Used to generate tick interrupts.
     wire        video_blank;    // blank screen during scrolling
     wire        video_gfx;      // display graphic characters vs. lower-case
-    
-    pet2001ntsc vid(.vidout(vidout),
 
-                    .video_addr(video_addr),
-                    .video_data(video_data),
-        
-                    .charaddr(charaddr),
-                    .chardata(chardata),
+    // PET video interface
+    pet2001vid vid(.vid_n(petvid_data_n),
+                   .vert_n(petvid_vert_n),
+                   .horz_n(petvid_horz_n),
 
-                    .video_on(video_on),
-                    .video_blank(video_blank),
-                    .video_gfx(video_gfx),
+                   .video_addr(video_addr),
+                   .video_data(video_data),
         
-                    .clk(clk),
-                    .reset(reset)
+                   .charaddr(charaddr),
+                   .chardata(chardata),
+
+                   .video_on(video_on),
+                   .video_blank(video_blank),
+                   .video_gfx(video_gfx),
+        
+                   .clk(clk),
+                   .reset(reset)
             );
+
     
     ////////////////////////////////////////////////////////
     // I/O hardware

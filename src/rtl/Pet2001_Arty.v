@@ -2,25 +2,6 @@
 //
 // Pet2001_Arty.v
 //
-//      This is the very top module for Pet2001 in Digilent Arty FPGA
-//      evaluation board.  This version converts UART inputs into PET
-//      keystrokes and outputs composite video.  An adapter plugged into PMOD
-//      connector JA is needed to produce the composite video signal.
-//
-// Interfaces:
-//      BTN -           Button 0, system reset.
-//      SW[2] -         PET diagnostic switch
-//      SW[1] -         PET turbo mode
-//      SW[0] -         PET suspend
-//      LED -           PET diagnostic LED.
-//      CVID[1:0] -     PMOD connections JA[9:10], composite video out.
-//                      Connect JA9 through 330 ohm resistor to RCA jack
-//                      tip and JA10 through 100 ohm resistor to tip and
-//                      ground the ring.
-//      UART_TXD_IN -   UART signal FROM USB/UART chip.  Characters received
-//                      are turned into PET keystrokes.  9600 baud.
-//
-//
 // Copyright (c) 2015 Thomas Skibo.
 // All rights reserved.
 //
@@ -45,6 +26,33 @@
 // OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 //
+//      This is the very top module for Pet2001 in Digilent Arty FPGA
+//      evaluation board.  This version converts UART inputs into PET
+//      keystrokes and outputs composite video.  An adapter plugged into PMOD
+//      connector JA is needed to produce the composite video signal.
+//
+// Interfaces:
+//      BTN -           Button 0, system reset.
+//      SW[2] -         PET diagnostic switch
+//      SW[1] -         PET turbo mode
+//      SW[0] -         PET suspend
+//      LED -           PET diagnostic LED.
+//
+// Pet simulation interfaces:
+//
+//      UART_TXD_IN -   UART signal FROM USB/UART chip.  Characters received
+//                      are turned into PET keystrokes.  9600 baud.
+//
+// PET video interface:
+//
+//	These signals are inverted because I run them through a TTL 7404
+//	hex inverter to convert 3.3v signals to 5v signals.
+//
+//	PET_VID_DATA_N - PET video data inverted.
+//	PET_VID_HORZ_N - PET video horizontal drive, inverted.
+//	PET_VID_VERT_N - PET video vertical drive, inverted.
+//
+//
 
 
 
@@ -53,7 +61,9 @@ module Pet2001_Arty(
             input        BTN,
             output reg   LED,
             
-            output [1:0] CVID,
+            output       PET_VID_DATA_N,
+            output       PET_VID_HORZ_N,
+            output       PET_VID_VERT_N,
             
             input        UART_TXD_IN,
             output       UART_RXD_OUT,
@@ -78,7 +88,7 @@ module Pet2001_Arty(
     IBUFG gclk_inbuf(.I(CLK), .O(clkin1));
 
     MMCME2_BASE #(.CLKIN1_PERIOD(10.0),
-                  .CLKFBOUT_MULT_F(10.0),
+                  .CLKFBOUT_MULT_F(8.0),
                   .CLKOUT0_DIVIDE_F(20.0)
                   // .CLKOUT1_DIVIDE(40),       // subsequent divides are decimal
           )
@@ -120,7 +130,9 @@ module Pet2001_Arty(
     wire [3:0] keyrow;
     wire [7:0] keyin;
 
-    pet2001_top pet_top(.vidout(CVID),
+    pet2001_top pet_top(.petvid_data_n(PET_VID_DATA_N),
+                        .petvid_horz_n(PET_VID_HORZ_N),
+                        .petvid_vert_n(PET_VID_VERT_N),
 
                         .keyrow(keyrow),
                         .keyin(keyin),
@@ -146,7 +158,7 @@ module Pet2001_Arty(
     wire [7:0] uart_data;
     wire       uart_strobe;
 
-    uart #(.CLK_DIVIDER(5208)) uart0(.serial_out(),
+    uart #(.CLK_DIVIDER(4166)) uart0(.serial_out(),
                                      .serial_in(UART_TXD_IN),
 
                                      .write_rdy(), // unused xmit interface

@@ -9,7 +9,7 @@ SOURCES= \
 	$(SRCDIR)/rtl/pet2001hw/pet2001uart_keys.v	\
 	$(SRCDIR)/rtl/pet2001hw/pet2001hw.v		\
 	$(SRCDIR)/rtl/pet2001hw/pet2001ram.v		\
-	$(SRCDIR)/rtl/pet2001hw/pet2001ntsc.v		\
+	$(SRCDIR)/rtl/pet2001hw/pet2001vid.v		\
 	$(SRCDIR)/rtl/pet2001hw/pet2001roms.v		\
 	$(SRCDIR)/rtl/pet2001hw/pet2001io.v		\
 	$(SRCDIR)/rtl/pet2001hw/pia6520.v		\

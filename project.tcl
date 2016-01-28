@@ -31,7 +31,7 @@
 #    "../src/rtl/pet2001hw/via6522.v"
 #    "../src/rtl/pet2001hw/pet2001io.v"
 #    "../src/rtl/pet2001hw/pet2001roms.v"
-#    "../src/rtl/pet2001hw/pet2001ntsc.v"
+#    "../src/rtl/pet2001hw/pet2001vid.v"
 #    "../src/rtl/pet2001hw/pet2001ram.v"
 #    "../src/rtl/pet2001hw/pet2001vidram.v"
 #    "../src/rtl/cpu6502/cpu6502.v"
@@ -124,7 +124,7 @@ set files [list \
  "[file normalize "$origin_dir/src/rtl/pet2001hw/via6522.v"]"\
  "[file normalize "$origin_dir/src/rtl/pet2001hw/pet2001io.v"]"\
  "[file normalize "$origin_dir/src/rtl/pet2001hw/pet2001roms.v"]"\
- "[file normalize "$origin_dir/src/rtl/pet2001hw/pet2001ntsc.v"]"\
+ "[file normalize "$origin_dir/src/rtl/pet2001hw/pet2001vid.v"]"\
  "[file normalize "$origin_dir/src/rtl/pet2001hw/pet2001ram.v"]"\
  "[file normalize "$origin_dir/src/rtl/pet2001hw/pet2001vidram.v"]"\
  "[file normalize "$origin_dir/src/rtl/cpu6502/cpu6502.v"]"\
