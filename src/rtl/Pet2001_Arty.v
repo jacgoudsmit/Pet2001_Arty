@@ -2,7 +2,7 @@
 //
 // Pet2001_Arty.v
 //
-// Copyright (c) 2015 Thomas Skibo.
+// Copyright (c) 2015-2016 Thomas Skibo.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,16 @@
 // SUCH DAMAGE.
 //
 //      This is the very top module for Pet2001 in Digilent Arty FPGA
-//      evaluation board.  This version converts UART inputs into PET
-//      keystrokes and outputs composite video.  An adapter plugged into PMOD
-//      connector JA is needed to produce the composite video signal.
+//      evaluation board.  This version is designed to interface to a
+//	real Commodore PET 2001 keyboard and video interface.
 //
 // Interfaces:
+//
 //      BTN -           Button 0, system reset.
 //      SW[2] -         PET diagnostic switch
 //      SW[1] -         PET turbo mode
 //      SW[0] -         PET suspend
 //      LED -           PET diagnostic LED.
-//
-// Pet simulation interfaces:
-//
-//      UART_TXD_IN -   UART signal FROM USB/UART chip.  Characters received
-//                      are turned into PET keystrokes.  9600 baud.
 //
 // PET video interface:
 //
@@ -52,9 +47,19 @@
 //	PET_VID_HORZ_N - PET video horizontal drive, inverted.
 //	PET_VID_VERT_N - PET video vertical drive, inverted.
 //
+// PET keyboard interface:
 //
-
-
+//	KEYROW[9:0] - PET keyboard row outputs, "open drain"
+//	KEYCOL[7:0] - PET keyboard column inputs with pull-downs.
+//
+//	XXX: due to a few mishaps when I cobbled together the Arty
+//	daughter board for this, I had to use five of Arty's analog
+//	inputs for the keyboard column inputs.  It turns out Arty has
+//  	pull-down resistors on those signals which overwhelm the weak pull-ups
+//	that the FPGA can implement.  Sooo, I reversed the logic used
+//	for the PET keyboard: the row outputs are high-Z when not asserted
+//	and 1 when asserted.  The column inputs implement pull-downs.
+//
 
 module Pet2001_Arty(
             input [2:0]  SW, 
@@ -64,9 +69,9 @@ module Pet2001_Arty(
             output       PET_VID_DATA_N,
             output       PET_VID_HORZ_N,
             output       PET_VID_VERT_N,
-            
-            input        UART_TXD_IN,
-            output       UART_RXD_OUT,
+
+            output [9:0] KEYROW,
+            input [7:0]  KEYCOL,
             
             input        CLK
         );
@@ -127,15 +132,15 @@ module Pet2001_Arty(
     wire diag_l = ~SW[2];
     wire clk_speed = SW[1];
     wire clk_stop = SW[0];
-    wire [3:0] keyrow;
-    wire [7:0] keyin;
-
+    wire [3:0] keyrowsel;
+    wire [7:0] keycol_n = ~KEYCOL; // See note at top on logic reversal.
+    
     pet2001_top pet_top(.petvid_data_n(PET_VID_DATA_N),
                         .petvid_horz_n(PET_VID_HORZ_N),
                         .petvid_vert_n(PET_VID_VERT_N),
 
-                        .keyrow(keyrow),
-                        .keyin(keyin),
+                        .keyrow(keyrowsel),
+                        .keyin(keycol_n),
         
                         .cass_motor_n(),
                         .cass_write(),
@@ -153,36 +158,16 @@ module Pet2001_Arty(
                         .reset(reset)
                 );
 
-    assign UART_RXD_OUT = UART_TXD_IN; // echo back serial data
-
-    wire [7:0] uart_data;
-    wire       uart_strobe;
-
-    uart #(.CLK_DIVIDER(4166)) uart0(.serial_out(),
-                                     .serial_in(UART_TXD_IN),
-
-                                     .write_rdy(), // unused xmit interface
-                                     .write_data(8'h00),
-                                     .write_strobe(1'b0),
-
-                                     .read_data(uart_data),
-                                     .read_strobe(uart_strobe),
-
-                                     .clk(clk),
-                                     .reset(reset)
-                                );
-
-    pet2001uart_keys petkeys(.keyrow(keyrow),
-                             .keyin(keyin),
-                             
-                             .uart_data(uart_data),
-                             .uart_strobe(uart_strobe),
-
-                             .clk(clk),
-                             .reset(reset)
-                        );
-
-    always @(posedge clk)
-        LED <= (keyrow == 4'd11); // diag LED
+    // Implement "open drain" output bufs: high-Z when deasserted,
+    // 1 when asserted.  See note at top.
+    genvar     i;
+    generate
+        for (i = 0; i < 10; i = i + 1) begin:keyobufs
+            OBUFT kr(.I(1'b1), .T(keyrowsel != i), .O(KEYROW[i]));
+        end
+    endgenerate
     
+    always @(posedge clk)
+        LED <= (keyrowsel == 4'd11); // diag LED
+
 endmodule // Pet2001_Arty

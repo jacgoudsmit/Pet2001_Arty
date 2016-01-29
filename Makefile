@@ -6,7 +6,6 @@ SOURCES= \
 	$(SRCDIR)/rtl/Pet2001_Arty.v			\
 	$(SRCDIR)/rtl/pet2001hw/via6522.v		\
 	$(SRCDIR)/rtl/pet2001hw/pet2001vidram.v		\
-	$(SRCDIR)/rtl/pet2001hw/pet2001uart_keys.v	\
 	$(SRCDIR)/rtl/pet2001hw/pet2001hw.v		\
 	$(SRCDIR)/rtl/pet2001hw/pet2001ram.v		\
 	$(SRCDIR)/rtl/pet2001hw/pet2001vid.v		\
@@ -14,7 +13,6 @@ SOURCES= \
 	$(SRCDIR)/rtl/pet2001hw/pet2001io.v		\
 	$(SRCDIR)/rtl/pet2001hw/pia6520.v		\
 	$(SRCDIR)/rtl/cpu6502/cpu6502.v			\
-	$(SRCDIR)/rtl/misc/uart.v			\
 	$(SRCDIR)/rtl/pet2001_top.v
 
 ROMSRCS= \

@@ -8,16 +8,18 @@ module testPet2001_Arty;
 
     reg [2:0]  SW;
     reg        BTN;
-    wire [1:0] CVID;
-    reg        UART_TXD_IN;
-    wire       UART_RXD_OUT;
+    wire       PET_VID_DATA_N;
+    wire       PET_VID_HORZ_N;
+    wire       PET_VID_VERT_N;
     wire       LED;
+    wire [9:0] KEYROW;
+    reg [7:0]  KEYCOL;
     reg        CLK100;
 
     initial begin
         SW = 3'b000;
         BTN = 1'b0;
-        UART_TXD_IN = 1'b1;
+        KEYCOL = 8'h00;
         CLK100 = 1'b0;
     end
 
@@ -26,10 +28,12 @@ module testPet2001_Arty;
     // DUT
     Pet2001_Arty dut(.SW(SW),
                      .BTN(BTN),
-                     .CVID(CVID),
                      .LED(LED),
-                     .UART_TXD_IN(UART_TXD_IN),
-                     .UART_RXD_OUT(UART_RXD_OUT),
+                     .PET_VID_DATA_N(PET_VID_DATA_N),
+                     .PET_VID_HORZ_N(PET_VID_HORZ_N),
+                     .PET_VID_VERT_N(PET_VID_VERT_N),
+                     .KEYROW(KEYROW),
+                     .KEYCOL(KEYCOL),
                      .CLK(CLK100)
                   );
     

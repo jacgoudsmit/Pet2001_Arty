@@ -37,12 +37,9 @@
 #    "../src/rtl/cpu6502/cpu6502.v"
 #    "../src/rtl/pet2001hw/pet2001hw.v"
 #    "../src/rtl/pet2001_top.v"
-#    "../src/rtl/misc/uart.v"
-#    "../src/rtl/pet2001hw/pet2001uart_keys.v"
 #    "../src/rtl/Pet2001_Arty.v"
 #    "../src/constrs/Pet2001_Arty.xdc"
 #    "../src/sim/simtop.v"
-#    "../src/sim/sim_petkeys.v"
 #
 #*****************************************************************************************
 
@@ -130,8 +127,6 @@ set files [list \
  "[file normalize "$origin_dir/src/rtl/cpu6502/cpu6502.v"]"\
  "[file normalize "$origin_dir/src/rtl/pet2001hw/pet2001hw.v"]"\
  "[file normalize "$origin_dir/src/rtl/pet2001_top.v"]"\
- "[file normalize "$origin_dir/src/rtl/misc/uart.v"]"\
- "[file normalize "$origin_dir/src/rtl/pet2001hw/pet2001uart_keys.v"]"\
  "[file normalize "$origin_dir/src/rtl/Pet2001_Arty.v"]"\
 ]
 add_files -norecurse -fileset $obj $files
@@ -172,7 +167,6 @@ if {[string equal [get_filesets -quiet sim_1] ""]} {
 set obj [get_filesets sim_1]
 set files [list \
  "[file normalize "$origin_dir/src/sim/simtop.v"]"\
- "[file normalize "$origin_dir/src/sim/sim_petkeys.v"]"\
 ]
 add_files -norecurse -fileset $obj $files
 
